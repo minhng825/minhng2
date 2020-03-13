@@ -1,0 +1,99 @@
+from enum import Enum
+
+
+class Animal(Enum):
+    Ameise = 1
+    Maus = 2
+    Hamster = 3
+    Katze = 4
+    Hund = 5
+    Panda = 6
+    Pferd = 7
+    Nashorn = 8
+    Elefant = 9
+    Blauwal = 10
+
+
+def mergeSort(L):
+    print('Mergesort, Parameter L:')
+    print(L)
+
+    # Sortieren durch Mischen bereits sortierter Teilfolgen
+    # 1.Teilen der Sequenz in moeglichst gleich grosse Teilfolgen
+    # 2. Sortieren der Teilfolgen (Rekursion)
+    # 3. Zusammenfuegen durch Mischen
+
+    if len(L) <= 1:  # Sequenzen der Laenge 1
+        return L
+    middle = int(len(L) / 2)  # Teilen der Sequenz in moeglichst gleich grosse Teilfolgen
+    left = mergeSort(L[:middle])  # linker Teil ist von erster Element bis Mitte
+    right = mergeSort(L[middle:])  # rechter Teil ist von Mitte bis Ende
+    return merge(left, right)  # Sortieren der Teilfolgen (Rekursion)
+
+
+def merge(left, right):  # Zusammenfuegen durch Mischen von 2 Teilen
+    result = []  # ein leeres Array erstellen
+    leftIndex, rightIndex = 0, 0
+    while leftIndex < len(left) and rightIndex < len(right):  # linke und rechte Sequenzen nicht leer ist
+        if Animal[left[leftIndex]].value <= Animal[right[rightIndex]].value:
+            # Der Wert vom linken Index des linkem Teil ist kleiner als der Wert im rechten Index des rechtem Teil
+            result.append(left[leftIndex])  # kleiner Wert wird im Ergebnis eingefuegt
+            leftIndex += 1  # Index erhoehen um fortzufahren
+        else:  # Sonst der Werte vom rechten Teil wird eingefuegt
+            result.append(right[rightIndex])
+            rightIndex += 1
+    # Ist While-Schleife nicht der Fall, befinden sich entweder Elemente im linken oder im rechten Sequenzen
+    result.extend(left[leftIndex:])
+    # alles vom linken Index des linken Sequenzen bis zum Ende werden zum Ergebnis eingefuegt
+    result.extend(right[rightIndex:])  # gleiche mit rechten Sequenzen
+    return result
+
+
+def heapSort(L):
+    print('Heapsort, Parameter L:')
+    print(L)
+
+    # 1. mit build_max_heap einen Heap aus einem beliebigen Array erstellen
+    # 2. das erste Element mit dem letzten Element im Array aus vertauschen
+    # 3. das letzte Element aus dem Array entfernen
+    # 4. max_heapify zum ersten Element ausfuehren
+    def build_heap(L):
+        for i in reversed(range(len(L) // 2)):  # fuer alle inneren Knoten nach dem len(L)//2 bottom-up
+            heapify(L, i)  # Heapeigenschaft wieder herstellen
+
+    def heapify(L, i):
+        left = 2 * i + 1  # linkes Kind von i
+        right = 2 * i + 2  # rechtes Kind von i
+        length = len(L) - 1  # Groesse des Arrays
+        largest = i  # Der Wert im Vater ist am groessten
+        # Der groesste Wert und der Wert im rechten/linken Kind vergleichen
+        # Dann der groessere Wert festsetzen
+        if left <= length and Animal[L[i]].value < Animal[L[left]].value:
+            largest = left
+        if right <= length and Animal[L[largest]].value < Animal[L[right]].value:
+            largest = right
+        if largest != i:  # Der Wert im Vater ist nicht am groessten
+            L[i], L[largest] = L[largest], L[i]  # das erste Element mit dem groessten Element im Array ausvertauschen
+            heapify(L, largest)  # Heapeigenschaft wieder herstellen
+
+    build_heap(L)
+    sorted_L = []  # ein leeres Array erstellen
+    while len(L) >= 1:  #
+        L[0], L[-1] = L[-1], L[0]  # Wurzel mit letztem Blatt tauschen
+        sorted_L.append(L.pop())  # letzten Knoten aus Baum entfernen und im neuen Array einfuegen
+        heapify(L, 0)
+    return sorted_L
+
+
+# Hier ist ein Testfall:
+L = ["Panda", "Ameise", "Nashorn", "Pferd", "Blauwal", "Katze", "Hund", "Maus", "Panda"]
+print("Eingabe: ", L)
+print("######MERGESORT######")
+print(mergeSort(L))
+print("Eingabe: ", L)
+print("######HEAPSORT######")
+print(heapSort(L))
+
+# Das Ergebnis sollten folgende Liste sein:
+# ['Ameise', 'Maus', 'Katze', 'Hund', 'Panda', 'Panda', 'Pferd', 'Nashorn', 'Blauwal']
+# ['Blauwal', 'Nashorn', 'Pferd', 'Panda', 'Panda', 'Hund', 'Katze', 'Maus', 'Ameise']
